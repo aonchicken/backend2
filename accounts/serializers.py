@@ -3,6 +3,10 @@ from rest_framework import serializers,permissions
 from djoser.serializers import UserCreateSerializer as BaseUserRegistrationSerializer
 from djoser.serializers import UserSerializer as BaseUserViewsSerializer
 from django.db import IntegrityError
+from django.contrib.auth.password_validation import validate_password
+from django.core import exceptions as django_exceptions
+
+
 
 class UserRegistrationSerializer(BaseUserRegistrationSerializer):
     # groups = serializers.PrimaryKeyRelatedField(queryset=Group.objects.all())
@@ -10,33 +14,26 @@ class UserRegistrationSerializer(BaseUserRegistrationSerializer):
         print("hello1")
         fields = ('username', 'first_name', 'last_name', 'password','groups')
 
-    # def create(self, validated_data):
-    #     groups_data = validated_data.pop('groups')
-    #     user = User.objects.create(**validated_data)
-    #     for group_data in groups_data:
-    #         # Group.objects.create(user=user, **group_data)
-    #         # user.groups.add(1)
-    #         user.groups.set(1)
-    #     return user
-    # def create(self, validated_data):
-    #     try:
-    #         user = self.perform_create(validated_data)
-    #         user.groups.add(1)
-    #
-    #     except IntegrityError:
-    #         self.fail("cannot_create_user")
-    #
-    #     return user
+    def validate(self, attrs):
+        groups = attrs.pop("groups")
+        user = User(**attrs)
+        password = attrs.get("password")
+        try:
+            validate_password(password, user)
+            attrs["groups"] = groups
+        except django_exceptions.ValidationError as e:
+            serializer_error = serializers.as_serializer_error(e)
+            raise serializers.ValidationError(
+                {"password": serializer_error["non_field_errors"]}
+            )
+
+        return attrs
     def create(self, validated_data):
         try:
             groups_data = validated_data.pop('groups')
-            print("---------------------hello-------------------")
-            print(validated_data)
-            print(groups_data.id)
             user = self.perform_create(validated_data)
             user.save()
-            user.groups.add(1)
-
+            user.groups.add(groups_data[0].id)
         except IntegrityError:
             self.fail("cannot_create_user")
 

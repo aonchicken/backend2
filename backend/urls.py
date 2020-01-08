@@ -26,7 +26,8 @@ schema_view = get_swagger_view(title='Fixture API')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('docs/', schema_view),
+    # path('docs/', schema_view),
+    path('', schema_view),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('token-auth/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token-refresh-auth/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
