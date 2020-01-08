@@ -9,9 +9,7 @@ from django.core import exceptions as django_exceptions
 
 
 class UserRegistrationSerializer(BaseUserRegistrationSerializer):
-    # groups = serializers.PrimaryKeyRelatedField(queryset=Group.objects.all())
     class Meta(BaseUserRegistrationSerializer.Meta):
-        print("hello1")
         fields = ('username', 'first_name', 'last_name', 'password','groups')
 
     def validate(self, attrs):
@@ -36,14 +34,7 @@ class UserRegistrationSerializer(BaseUserRegistrationSerializer):
             user.groups.add(groups_data[0].id)
         except IntegrityError:
             self.fail("cannot_create_user")
-
         return user
-
-
-
-
-
-
 
 class UserViewsSerializer(BaseUserViewsSerializer):
     class Meta(BaseUserRegistrationSerializer.Meta):
