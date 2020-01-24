@@ -9,6 +9,7 @@ from django.db import models
 
 
 class Account(models.Model):
+
     aname = models.CharField(primary_key=True, max_length=45)
     apsw = models.CharField(max_length=45, blank=True, null=True)
     fname = models.CharField(max_length=45, blank=True, null=True)
@@ -74,6 +75,7 @@ class Fixture(models.Model):
     adddate = models.DateTimeField(blank=True, null=True)
     addby = models.CharField(max_length=45, blank=True, null=True)
     description = models.CharField(max_length=200, blank=True, null=True)
+    # te = models.ForeignKey(Account, related_name='user', on_delete=models.CASCADE)
     te = models.CharField(max_length=45, blank=True, null=True)
     fwidth = models.IntegerField(blank=True, null=True)
     fheight = models.IntegerField(blank=True, null=True)
